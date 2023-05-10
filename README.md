@@ -6,7 +6,7 @@ That mod is ModSync.
 ModSync works by generating a zip file of your mods folder and then sending that to another ModSync on another minecraft instance (WIP).
 
 
-ModSync is an idea given to me by (Chee-Ho)[https://github.com/Artisine].
+ModSync is an idea given to me by [Chee-Ho](https://github.com/Artisine).
 
 What works:
 - Creates zip
