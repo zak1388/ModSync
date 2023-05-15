@@ -69,11 +69,14 @@ public class ModHostingServer {
 			t.sendResponseHeaders(200, ModZipFile.getModZipFile().length());
 			
 			OutputStream bodyStream = t.getResponseBody();
-			int lastByte = modZipFileInputStream.read();
-			while (lastByte != -1) {
-				bodyStream.write(lastByte);
-				lastByte = modZipFileInputStream.read();
-			}
+			
+			int bytesRead = 0;
+            final int bufferSize = 4096;
+			do {
+				byte[] block = new byte[bufferSize];
+				bytesRead = modZipFileInputStream.read(block);
+				bodyStream.write(block, 0, bytesRead);
+			} while (bytesRead == bufferSize);
 			
 			bodyStream.close();
 		} catch (IOException exception) {

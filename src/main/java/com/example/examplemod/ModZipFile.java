@@ -29,7 +29,7 @@ public class ModZipFile {
 		LOGGER.debug("Generating mod zip file...");
 
 		File incompleteModZipFile = new File("mods.zip");
-		ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(incompleteModZipFile)));
+		ZipOutputStream zipOutputStream = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(incompleteModZipFile)));
 		
 		ModList modList = ModList.get();
 		for (int i = 0; i < modList.size(); i++) {
@@ -47,20 +47,23 @@ public class ModZipFile {
 			}
 			
 			ZipEntry entry = new ZipEntry(modFile.getFileName());
-			zos.putNextEntry(entry);
+			zipOutputStream.putNextEntry(entry);
 			
 			FileInputStream modFileInputStream = new FileInputStream(modFile.getFilePath().toFile());
-			int lastByte = modFileInputStream.read();
-			while (lastByte != -1) {
-				zos.write(lastByte);
-				lastByte = modFileInputStream.read();
-			}
 			
-			zos.closeEntry();
+			int bytesRead = 0;
+            final int bufferSize = 4096;
+			do {
+				byte[] block = new byte[bufferSize];
+				bytesRead = modFileInputStream.read(block);
+				zipOutputStream.write(block, 0, bytesRead);
+			} while (bytesRead == bufferSize);
+			
+			zipOutputStream.closeEntry();
 			LOGGER.debug("Finished packing mod: " + modFile.getFileName());
 		}
 		
-		zos.close();
+		zipOutputStream.close();
 		
 		modZipFile = incompleteModZipFile;
 		LOGGER.debug("Finished generating mod zip file");
