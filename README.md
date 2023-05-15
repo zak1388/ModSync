@@ -16,8 +16,8 @@ What works:
 - The log messages only in the dev enviroment (they break in a normal enviroment)
 
 What doesn't work:
-- Multiple http connections at once
-- Download speeds are quite slow
-- Generates zip file after the first request for it, on every start
-- Zip speeds are quite slow too
-- Getting the mods.zip internally and unzipping it, and restarting the minecraft client
+- [Multiple http connections at once](../../issues/2)
+- [Download speeds are quite slow](../../issues/3)
+- [Generates zip file after the first request for it, on every start](../../issues/4)
+- [Zip speeds are quite slow too](../../issues/1)
+- [Getting the mods.zip internally and unzipping it, and restarting the minecraft client](../../issues/5)
