@@ -1,4 +1,4 @@
-package com.example.examplemod;
+package com.zak.modsync;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.world.level.block.Block;
@@ -19,14 +19,14 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod("examplemod")
-public class ExampleMod
+@Mod("ModSync")
+public class ModSync
 {
     // Directly reference a slf4j logger
     private static final Logger LOGGER = LogUtils.getLogger();
     private ModHostingServer modListServer;
 
-    public ExampleMod()
+    public ModSync()
     {
         // Register the setup method for modloading
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);

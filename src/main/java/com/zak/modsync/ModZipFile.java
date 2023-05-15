@@ -1,4 +1,4 @@
-package com.example.examplemod;
+package com.zak.modsync;
 
 import java.io.BufferedOutputStream;
 import java.io.File;

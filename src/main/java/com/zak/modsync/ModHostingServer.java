@@ -1,4 +1,4 @@
-package com.example.examplemod;
+package com.zak.modsync;
 
 import java.io.IOException;
 import java.io.OutputStream;
