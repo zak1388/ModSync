@@ -50,6 +50,7 @@ public class ModHostingServer {
 	protected static void modZipHandler(HttpExchange t) {
 		BufferedInputStream modZipFileInputStream = null;
 		try {
+			LOGGER.debug("mod zip handler says hi!");
 			if (ModZipFile.getModZipFile() == null) {
 				String response = "Generating zip file...";
 				
@@ -63,6 +64,7 @@ public class ModHostingServer {
 				return;
 			}
 			
+			LOGGER.debug("sending mods.zip");
 			modZipFileInputStream = new BufferedInputStream(new FileInputStream(ModZipFile.getModZipFile()));
 			
 			t.getResponseHeaders().set("Content-Type", "application/zip");
@@ -79,6 +81,7 @@ public class ModHostingServer {
 			} while (bytesRead == bufferSize);
 			
 			bodyStream.close();
+			LOGGER.debug("sent mods.zip successfully");
 		} catch (IOException exception) {
 			LOGGER.error("Failed to send mods zip file due to an IOException: " + exception.getMessage() + " caused by " + exception.getCause());
 		} finally {

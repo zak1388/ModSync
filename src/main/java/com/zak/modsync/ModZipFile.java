@@ -1,9 +1,12 @@
 package com.zak.modsync;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.io.FileInputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -14,6 +17,7 @@ import com.mojang.logging.LogUtils;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
+import java.util.Arrays;
 
 
 import net.minecraftforge.fml.ModList;
@@ -67,24 +71,84 @@ public class ModZipFile {
 		
 		modZipFile = incompleteModZipFile;
 		LOGGER.debug("Finished generating mod zip file");
+		generateHash();
 		generating = false;
+	}
+
+	public static void generateHash() {
+		LOGGER.debug("Generating hash for mods.zip...");
+		try {
+			MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+
+			BufferedInputStream fileInputStream = new BufferedInputStream(new FileInputStream(modZipFile));
+
+			int bytesRead = 0;
+			final int bufferSize = 4096;
+			do {
+				byte[] block = new byte[bufferSize];
+				bytesRead = fileInputStream.read(block);
+				messageDigest.update(block, 0, bytesRead);
+			} while (bytesRead == bufferSize);
+			byte[] hash = messageDigest.digest();
+			fileInputStream.close();
+
+			BufferedOutputStream fileOutputStream = new BufferedOutputStream(new FileOutputStream(new File("mods.zip.sha256")));
+			fileOutputStream.write(hash);
+			fileOutputStream.close();
+		} catch (IOException exception) {
+			LOGGER.error("IOException", exception);
+		} catch (NoSuchAlgorithmException exception) {
+			LOGGER.error("could not use the sha256 hashing algorithm", exception);
+		}
+		LOGGER.debug("Generated hash for mods.zip");
+	}
+
+	public static boolean verifyExistingModZipFile() {
+		try {
+			MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+
+			File modsZipFile = new File("mods.zip");
+			BufferedInputStream fileStream = new BufferedInputStream(new FileInputStream(modsZipFile));
+			
+			int bytesRead = 0;
+			final int bufferSize = 4096;
+			do {
+				byte[] block = new byte[bufferSize];
+				bytesRead = fileStream.read(block);
+				messageDigest.update(block, 0, bytesRead);
+			} while (bytesRead == bufferSize);
+			byte[] generatedHash = messageDigest.digest();
+			fileStream.close();
+
+			fileStream = new BufferedInputStream(new FileInputStream(new File("mods.zip.sha256")));
+			byte[] storedHash = fileStream.readAllBytes();
+			fileStream.close();
+
+			return Arrays.equals(storedHash, generatedHash);
+		} catch (IOException exception) {
+			LOGGER.error("Could not get hash from file 'mods.zip.sha256'", exception);
+		} catch (NoSuchAlgorithmException exception) {
+			LOGGER.error("Could not use the sha256 hashing algorithm", exception);
+		}
+
+		return false;
 	}
 	
 	public static File getModZipFile() {
 		if (modZipFile == null && !generating) {
-			generating = true;
-			new Thread(() -> {
-				try {
-					generateModZipFile();
-				} catch (IOException e) {
-					LOGGER.error("Failed to generate mod zip file because " + e.getMessage() + 
-							Stream.of(e.getStackTrace())
-							.map(StackTraceElement::toString)
-							.map((string) -> "\n\t at " + string)
-							.collect(Collectors.joining())
-					);
-				}
-			}).start();
+			if (verifyExistingModZipFile()) {
+				LOGGER.debug("Using already generated mods.zip file ^-^");
+				modZipFile = new File("mods.zip");
+			} else {
+				generating = true;
+				new Thread(() -> {
+					try {
+						generateModZipFile();
+					} catch (IOException e) {
+						LOGGER.error("Failed to generate mod zip file", e);
+					}
+				}).start();
+			}
 		}
 		
 		return modZipFile;
