@@ -16,5 +16,4 @@ What works:
 - The log messages only in the dev enviroment (they break in a normal enviroment)
 
 What doesn't work:
-- [Multiple http connections at once](../../issues/2)
 - [Getting the mods.zip internally and unzipping it, and restarting the minecraft client](../../issues/5)
