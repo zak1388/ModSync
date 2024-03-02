@@ -52,13 +52,15 @@ public class ModHostingServer {
 		try {
 			LOGGER.debug("mod zip handler says hi!");
 			if (ModZipFile.getModZipFile() == null) {
-				String response = "Generating zip file...";
+				StringBuilder response = new StringBuilder();
+                response.append("<p>Generating zip file...</p>");
+                response.append("<script>setTimeout(() => window.location.reload(), 1000)</script>");
 				
-				t.getResponseHeaders().set("Content-type", "text/plain");
+				t.getResponseHeaders().set("Content-type", "text/html");
 				t.sendResponseHeaders(202, response.length());
 				
 				OutputStream os = t.getResponseBody();
-				os.write(response.getBytes());
+				os.write(response.toString().getBytes());
 				os.close();
 				
 				return;
@@ -97,7 +99,7 @@ public class ModHostingServer {
 		server = null;
 		
 		try {
-			LOGGER.debug("Trying to create http server");
+			LOGGER.info("Trying to create http server");
 			int port = 23682;
 			server = HttpServer.create(new InetSocketAddress(port), 0);
 			server.createContext("/mods", ModHostingServer::modListServerHandler);
@@ -105,7 +107,7 @@ public class ModHostingServer {
 			server.setExecutor(null);
 			server.start();
 						
-			LOGGER.debug("Running http server");
+			LOGGER.info("Running http server on " + Integer.toString(port));
 		} catch (IOException e) {
 			LOGGER.error("httpserver mess didnt work");
 			LOGGER.error(e.getMessage());
