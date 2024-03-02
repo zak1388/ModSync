@@ -17,5 +17,4 @@ What works:
 
 What doesn't work:
 - [Multiple http connections at once](../../issues/2)
-- [Generates zip file after the first request for it, on every start](../../issues/4)
 - [Getting the mods.zip internally and unzipping it, and restarting the minecraft client](../../issues/5)
