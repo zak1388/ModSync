@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
+import java.util.concurrent.Executor;
 
 import com.sun.net.httpserver.*;
 
@@ -104,7 +105,7 @@ public class ModHostingServer {
 			server = HttpServer.create(new InetSocketAddress(port), 0);
 			server.createContext("/mods", ModHostingServer::modListServerHandler);
 			server.createContext("/mods.zip", ModHostingServer::modZipHandler);
-			server.setExecutor(null);
+			server.setExecutor((runnable) -> (new Thread(runnable)).run());
 			server.start();
 						
 			LOGGER.info("Running http server on " + Integer.toString(port));
