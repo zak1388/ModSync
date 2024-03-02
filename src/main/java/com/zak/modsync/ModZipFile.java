@@ -63,6 +63,7 @@ public class ModZipFile {
 				zipOutputStream.write(block, 0, bytesRead);
 			} while (bytesRead == bufferSize);
 			
+            modFileInputStream.close();
 			zipOutputStream.closeEntry();
 			LOGGER.debug("Finished packing mod: " + modFile.getFileName());
 		}
